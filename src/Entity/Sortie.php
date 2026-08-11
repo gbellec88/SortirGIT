@@ -44,6 +44,10 @@ class Sortie
     #[ORM\ManyToMany(targetEntity: Participant::class, mappedBy: 'inscritsorties')]
     private Collection $participants;
 
+    #[ORM\ManyToOne(inversedBy: 'sorties')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Etat $etat = null;
+
     public function __construct()
     {
         $this->participants = new ArrayCollection();
@@ -161,6 +165,18 @@ class Sortie
         if ($this->participants->removeElement($participant)) {
             $participant->removeInscritsorty($this);
         }
+
+        return $this;
+    }
+
+    public function getEtat(): ?Etat
+    {
+        return $this->etat;
+    }
+
+    public function setEtat(?Etat $etat): static
+    {
+        $this->etat = $etat;
 
         return $this;
     }
