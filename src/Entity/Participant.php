@@ -66,9 +66,16 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: Sortie::class, mappedBy: 'organisateur')]
     private Collection $sorties;
 
+    /**
+     * @var Collection<int, Sortie>
+     */
+    #[ORM\ManyToMany(targetEntity: Sortie::class, inversedBy: 'participants')]
+    private Collection $inscritsorties;
+
     public function __construct()
     {
         $this->sorties = new ArrayCollection();
+        $this->inscritsorties = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -238,6 +245,30 @@ class Participant implements UserInterface, PasswordAuthenticatedUserInterface
                 $sorty->setOrganisateur(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Sortie>
+     */
+    public function getInscritsorties(): Collection
+    {
+        return $this->inscritsorties;
+    }
+
+    public function addInscritsorty(Sortie $inscritsorty): static
+    {
+        if (!$this->inscritsorties->contains($inscritsorty)) {
+            $this->inscritsorties->add($inscritsorty);
+        }
+
+        return $this;
+    }
+
+    public function removeInscritsorty(Sortie $inscritsorty): static
+    {
+        $this->inscritsorties->removeElement($inscritsorty);
 
         return $this;
     }
