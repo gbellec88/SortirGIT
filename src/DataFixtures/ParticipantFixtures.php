@@ -47,6 +47,7 @@ class ParticipantFixtures extends Fixture
             $password = $this->userPasswordHasher->hashPassword($participant, '123456');
             $participant->setPassword($password);
             $manager->persist($participant);
+            $this->addReference("participant$i", $participant);
 
         }
 
