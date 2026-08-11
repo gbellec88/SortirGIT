@@ -1,0 +1,49 @@
+{% extends "base.html.twig" %}
+
+{% block title %}ENI | {{ parent() }}{% endblock %}
+
+
+{% block body %}
+
+
+    <h1>Coucou avec Twig en https</h1>
+
+
+
+
+    <p>{{"+33 years"|date("d/m/y")}}</p>
+    <p>{{"yesterday"|date("d/m/y")}}</p>
+    <p>{{"-55 years"|date("d/m/y")}}</p>
+    <p>{{"11 july 1971"|date("d/m/y")}}</p>
+
+    {# ceci est un commentaire de Gaetan #}
+    {% set name="gaetan Bellec" %}
+    {# afficher la variable name #}
+    <p>{{ name }} -- {{ name|length }}</p>
+
+    {% set colors=["red","green","blue","violet","purple"] %}
+    <p>il y a {{ colors|length }} couleurs</p>
+    <p>{{ colors|join("////") }} couleurs</p>
+
+    {# on boucle sur le tableau des couleurs #}
+    {% for color in colors %}
+        <div>{{ loop.index0 }}</div>
+        <div style="background-color:{{ color }};padding: 20px ">{{ color }}</div>
+    {%endfor%}
+
+    {% set book={
+        title:"Symfony",
+        year:"2028",
+        author:"Jhonny Hallyday"
+    } %}
+
+
+    {% for key, value in book %}
+        <dl>
+            <dt>{{ key }}:</dt><dd> {{ value }}</dd>
+        </dl>
+
+    {%endfor%}
+
+{% endblock body%}
+
