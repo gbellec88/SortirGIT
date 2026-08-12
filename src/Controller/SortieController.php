@@ -27,16 +27,23 @@ final class SortieController extends AbstractController
         if ($formSortie->isSubmitted() && $formSortie->isValid()) {
             $entityManager->persist($sortie);
             $entityManager->flush();
+
+            //créer un message qui va s'affciher une seule fois sur la prochaine page
+            $this->addFlash("success","Sortie bien créé !");
+
+
+
+            //redirection vers la page de détails de la sortie
+            return $this->redirectToRoute('sortie_detail',['id'=>$sortie->getId()]);
         }
-
-        //créer un message qui va s'affciher une seule fois sur la prochaine page
-        $this->addFlash("success","Sortie bien créé !");
-
         return $this->render('sortie/create.html.twig',[
             //on passe le formulaire à Twig
             "sortieForm" => $formSortie,
         ]);
+
     }
+
+
 
 
     #[Route('/', name: 'sorties_list', methods: ['GET'])]
