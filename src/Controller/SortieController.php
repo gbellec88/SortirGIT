@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Sortie;
+use App\Repository\CampusRepository;
 use App\Repository\SortieRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -14,23 +15,37 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/sorties')]
 final class SortieController extends AbstractController
 {
-    #[Route('/', name: 'sortie_list', methods: ['GET'])]
-    public function list(SortieRepository $sortieRepository): Response
+    #[Route('/', name: 'sorties_list', methods: ['GET'])]
+    public function list(SortieRepository $sortieRepository,
+                         CampusRepository $campusRepository,
+                         Request $request): Response
     {
-        //aller chercher les cours en bdd , $courses est un tableau
-        //$courses = $courseRepository->findAll();
-        //avec des filtres
-        //$courses = $courseRepository->findBy(["published" => true]);
-        //$mminimumuration=2;
-        $sorties = $sortieRepository->findAll();
+        //l'id du campus sélectionné
+        $campusId = $request->query->get('campus');
 
+        //
+
+         if ($campusId) {
+            $sorties = $sortieRepository->findByCampusId($campusId);
+        } else {
+            $sorties = $sortieRepository->findAll();
+        }
+
+
+        //récupérer tous les campus
+        $campus= $campusRepository->findAll();
 
 
         return $this->render('sortie/list.html.twig', [
-            //on passe les cours à twig pour affichage
+            //on passe les entités à twig pour affichage
             'sorties' => $sorties,
+            'campus' => $campus,
+            'selectedCampus' => $campusId,
         ]);
     }
+
+
+
 
 
     #[Route('/{id}', name: 'sortie_detail',requirements: ['id' => '\d+'], methods: ['GET'])]

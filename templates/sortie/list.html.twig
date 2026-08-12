@@ -11,13 +11,38 @@
             <th scope="col">Clôture</th>
             <th scope="col">Inscrits/Places</th>
             <th scope="col">Etat</th>
-            <th scope="col">Inscrit</th>
             <th scope="col">Organisateur</th>
             <th scope="col">Actions</th>
         </tr>
         </thead>
         <tbody>
 
+        <form method="get" action="{{ path('sorties_list') }}">
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="campus">Campus :</label>
+
+                    <select name="campus" id="campus" class="form-select">
+                        <option value="">-- Tous les campus --</option>
+
+                        {% for uncampus in campus %}
+                            <option value="{{ uncampus.id }}"
+                                    {% if app.user.campus and app.user.campus.id == uncampus.id %}
+                                selected
+                                {% endif %}>
+                                {{ uncampus.nom }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary">
+                        Rechercher
+                    </button>
+                </div>
+            </div>
+        </form>
 
         {% for sortie in sorties %}
 

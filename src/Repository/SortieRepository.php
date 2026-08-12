@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Sortie;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -42,4 +43,23 @@ class SortieRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+    public function findByCampusId(int $campusId):Paginator
+    {
+        $queryBuilder = $this->createQueryBuilder('s');
+
+        $queryBuilder
+            ->addSelect('p')
+            ->addSelect('c')
+            ->leftJoin('s.organisateur', 'p')
+            ->leftJoin('p.campus', 'c')
+            ->where('c.id = :campusId')
+            ->setParameter('campusId', $campusId);
+
+        $query = $queryBuilder->getQuery();
+
+        return new Paginator($query);
+
+
+
+    }
 }
