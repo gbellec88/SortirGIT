@@ -15,7 +15,7 @@
                     <a class="nav-link" aria-current="page" >Accueil</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" >Mon profil</a>
+                    <a class="nav-link" href="{{ path('participant_edit',{id:app.user.id}) }}">Mon profil</a>
                 </li>
             </ul>
             {# si on a un utilisateur connecté #}

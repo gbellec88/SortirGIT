@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    Afficher une sortie | {{ parent() }}
+{% endblock %}
+
+{% block body %}
+    <p>ID de la sortie : {{ sortie.id }}</p>
+    <p><b>Nom de la sortie : </b> {{ sortie.nom }}     <b>Campus</b> : {{ organisateur.campus.nom }}</p>
+    <p>Date et heure de la sortie : {{ sortie.dateHeureDebut | date('d/m/Y H:i') }}  Ville : {{ lieu.ville }}</p>
+    <p>Date limite d'inscription : {{ sortie.dateLimiteInscription | date('d/m/Y H:i') }}</p>
+    <p>Nombre de places : {{ sortie.nbinscriptionMax }}</p>
+    <p>Durée (en minutes) : {{ sortie.duree }}</p>
+    <p><b>Description et infos : </b>{{ sortie.infosSortie }}</p>
+
+    <p></p>
+
+    <p>Nombre de participants :  }}</p>
+    <p><b>Liste des participants :</b></p>
+    <ul>
+        {% for participant in participants %}
+            <li>{{ participant.nom ~ ' ' ~ participant.prenom  }}</li>
+        {% endfor %}
+    </ul>
+
+
+
+
+
+{% endblock %}
+

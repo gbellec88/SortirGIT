@@ -13,10 +13,12 @@
             <th scope="col">Etat</th>
             <th scope="col">Inscrit</th>
             <th scope="col">Organisateur</th>
-            {# <th scope="col">Actions</th> #}
+            <th scope="col">Actions</th>
         </tr>
         </thead>
         <tbody>
+
+
         {% for sortie in sorties %}
 
 
@@ -29,8 +31,8 @@
                 <td>{{ sortie.organisateur.nom }} {{ sortie.organisateur.prenom }}</td>
 
                 {# todo :  #}
-               {# <td><a href="{{ path('sortie_show',{id:course.id}) }}" title="voir details sortie">Afficher</a></td>
-                <td><a href="{{ path('sortie_show',{id:course.id}) }}" title="se désister">Se désister</a></td>
+               <td><a href="{{ path('sortie_detail',{id:sortie.id}) }}" title="voir details sortie">Afficher</a></td>
+                {#<td><a href="{{ path('sortie_show',{id:course.id}) }}" title="se désister">Se désister</a></td>
                 <td><a href="{{ path('sortie_show',{id:course.id}) }}" title="se désister">S'inscrire</a></td>
                 <td><a href="{{ path('sortie_show',{id:course.id}) }}" title="se désister">publier</a></td>
                 <td><a href="{{ path('sortie_show',{id:course.id}) }}" title="se désister">Supprimer</a></td>#}
