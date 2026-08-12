@@ -52,7 +52,7 @@ class SortieRepository extends ServiceEntityRepository
             ->addSelect('c')
             ->leftJoin('s.organisateur', 'p')
             ->leftJoin('p.campus', 'c')
-            ->where('c.id = :campusId')
+            ->andWhere('c.id = :campusId')
             ->setParameter('campusId', $campusId);
 
         $query = $queryBuilder->getQuery();
@@ -62,4 +62,76 @@ class SortieRepository extends ServiceEntityRepository
 
 
     }
+
+    public function findByFiltres(int $campusId,
+                                  ?int $organisateurId,
+                                  ?int $inscritID,
+                                  ?int $pasInscritID,
+                                  ?bool $termineesBool,
+                                  ?\DateTimeImmutable $Debut,
+                                  ?\DateTimeImmutable $Fin,
+                                  ?string $nomContient):Paginator
+    {
+        $queryBuilder = $this->createQueryBuilder('s');
+
+        $queryBuilder
+            ->addSelect('p')
+            ->addSelect('c')
+            ->addSelect('i')
+            ->addSelect('e')
+            ->leftJoin('s.organisateur', 'p')
+            ->leftJoin('p.campus', 'c')
+            ->leftJoin('s.participants', 'i')
+            ->leftJoin('s.etat', 'e')
+            ->andWhere('c.id = :campusId')
+            ->setParameter('campusId', $campusId);
+            if($organisateurId!==null)
+            {
+                $queryBuilder
+                ->andWhere('p.id = :organisateurId')
+                ->setParameter('organisateurId', $organisateurId);
+            }
+            if($inscritID!==null)
+            {
+                $queryBuilder
+                    ->andWhere('i.id = :inscritID')
+                    ->setParameter('inscritID', $inscritID);
+            }
+            /*if($pasInscritID!==null)
+            {
+                $queryBuilder
+                    ->andWhere('i.id != :pasInscritID')
+
+                    ->setParameter('pasInscritID', $pasInscritID);
+            }*/
+
+            //sorties terminées
+            if($termineesBool)
+            {
+                $queryBuilder
+                    ->andWhere('e.id = :pasInscritID')
+                    ->setParameter('pasInscritID', 5);
+            }
+
+        if ($Debut !== null && $Fin !==null) {
+            $queryBuilder
+                ->andWhere('s.dateHeureDebut >= :dateDebut')
+                ->setParameter('dateDebut', $Debut->setTime(0, 0, 0));
+            $queryBuilder
+                ->andWhere('s.dateHeureDebut <= :dateFin')
+                ->setParameter('dateFin', $Fin->setTime(23, 59, 59));
+        }
+
+
+        if ($nomContient !== "") {
+            $queryBuilder
+                ->andWhere('s.nom LIKE :nomSortie')
+                ->setParameter('nomSortie', '%' . $nomContient . '%');
+        }
+
+
+        $query = $queryBuilder->getQuery();
+        return new Paginator($query);
+    }
+
 }

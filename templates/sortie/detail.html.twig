@@ -7,6 +7,7 @@
 {% block body %}
     <p>ID de la sortie : {{ sortie.id }}</p>
     <p><b>Nom de la sortie : </b> {{ sortie.nom }}     <b>Campus</b> : {{ organisateur.campus.nom }}</p>
+    <p><b>Etat: </b>{{ sortie.etat.libelle }}</p>
     <p><b>Organisateur: </b>{{ organisateur.nom }}</p>
     <p>Date et heure de la sortie : {{ sortie.dateHeureDebut | date('d/m/Y H:i') }}  Ville : {{ lieu.ville }}</p>
     <p>Date limite d'inscription : {{ sortie.dateLimiteInscription | date('d/m/Y H:i') }}</p>
