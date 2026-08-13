@@ -219,7 +219,7 @@ final class SortieController extends AbstractController
     }
 
 
-    //route pour modifier une sortie
+    //route pour modifier une sortie ou la supprimer
     #[Route('/{id}/modifier', name: 'sortie_modifier',requirements: ['id' => '\d+'], methods: ['GET','POST'])]
     public function modifier(Sortie $sortie,Request $request,EntityManagerInterface $em,EtatRepository $etatRepository): Response
     {
@@ -238,10 +238,29 @@ final class SortieController extends AbstractController
             $etat = $etatRepository->find(1);
         }
 
+        //pour la SUPPRESSION //////////////////////////////////////////////
+        if ($action === 'supprimer') {
+            // Vérification du token
+            if (!$this->isCsrfTokenValid(
+                'delete-sortie-' . $sortie->getId(),
+                $request->request->get('_token')
+            )) {
+                $this->addFlash('danger', 'Token CSRF invalide.');
 
-        if($action=='supprimer'){
-            $this->redirectToRoute('sortie_supprimer',['id'=>$sortie->getId()]);
+                return $this->redirectToRoute('sorties_list');
+            }
+
+            $em->remove($sortie);
+            $em->flush();
+
+            $this->addFlash('success', 'La sortie a été supprimée.');
+
+            return $this->redirectToRoute('sorties_list');
         }
+
+
+       ///////////////////////////////////////////////////
+
 
 
         //créer le formulaire
@@ -270,23 +289,28 @@ final class SortieController extends AbstractController
 
     }
 
-
-    #[Route('/{id}/supprimer/{token}', name: 'sortie_supprimer', requirements: ['id' => '\d+'], methods: ['POST','DELETE'])]
-    public function supprimer(Sortie $sortie,EntityManagerInterface $em,string $token): Response
+    //route pour s'inscrire à une sortie
+    #[Route('/{id}/inscrire', name: 'sortie_inscrire',requirements: ['id' => '\d+'], methods: ['GET','POST'])]
+    public function inscrire(Sortie $sortie,EntityManagerInterface $em): Response
     {
-        if ($this->isCsrfTokenValid('delete-sortie-'.$sortie->getId(),$token)) {
 
-            $em->remove($sortie);
-            $em->flush();
-            $this->addFlash('success', 'La sortie a été supprimé');
+        // Récupérer le participant connecté
+        $participant = $this->getUser();
 
-            return $this->redirectToRoute('sorties_list');
+        if (!$participant) {
+            throw $this->createNotFoundException("Ce participant n'existe pas.");
+
         }
-        $this->addFlash('danger', 'La sortie n\'a pas pu être supprimée : pb token');
-        return $this->redirectToRoute('sorties_list',['id'=>$sortie->getId()]);
+
+        //ajout du participant connecté
+         $sortie->addParticipant($participant);
+         $em->persist($sortie);
+         $em->flush();
+
+
+        return $this->redirectToRoute('sorties_list');
 
     }
-
 
 
 }

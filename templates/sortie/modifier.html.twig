@@ -6,6 +6,11 @@
     <h3>Campus : {{ sortie.organisateur.campus.nom }}</h3>
     <div>
         {{ form_start(sortieForm)}}
+        <input
+            type="hidden"
+            name="_token"
+            value="{{ csrf_token('delete-sortie-' ~ sortie.id) }}"
+        >
         {{ form_widget(sortieForm)}}
         <button
             type="submit"

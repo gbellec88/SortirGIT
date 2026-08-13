@@ -18,7 +18,7 @@
         <tbody>
 
         <form method="get" action="{{ path('sorties_list') }}">
-            <div class="row">
+              <div class="row">
                 <div class="col-md-6">
                     <label for="campus">Campus :</label>
 
@@ -144,13 +144,21 @@
                <td><a href="{{ path('sortie_detail',{id:sortie.id}) }}" title="voir details sortie">Afficher</a></td>
 
 
-                {# afficher modifier si le user est l'organisateur de cette sortie #}
+
                 {% if app.user===sortie.organisateur %}
                 <td><a href="{{ path('sortie_modifier',{id:sortie.id}) }}" title="modifier">Modifier</a></td>
                 {% endif %}
-                {#  <td><a href="{{ path('sortie_show',{id:course.id}) }}" title="se désister">S'inscrire</a></td>
+
+                {% if app.user!==sortie.organisateur %}
+                    <td><a href="{{ path('sortie_inscrire',{id:sortie.id}) }}" title="s'inscrire">S'inscrire</a></td>
+                {% endif %}
+
+                {#{% if app.user===sortie.organisateur %}
+                <td><a href="{{ path('sortie_supprimer',{id:sortie.id})}}" title="Supprimer la Sortie">Supprimer</a></td>
+                {% endif %}
+                  <td><a href="{{ path('sortie_show',{id:course.id}) }}" title="se désister">S'inscrire</a></td>
                 <td><a href="{{ path('sortie_show',{id:course.id}) }}" title="se désister">publier</a></td>
-                <td><a href="{{ path('sortie_show',{id:course.id}) }}" title="se désister">Supprimer</a></td>#}
+                #}
 
 
             </tr>
