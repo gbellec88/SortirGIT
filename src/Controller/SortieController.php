@@ -341,6 +341,24 @@ final class SortieController extends AbstractController
     }
 
 
+    //route pour annuler une sortie
+   #[Route('/{id}/annuler', name: 'sortie_annuler',requirements: ['id' => '\d+'], methods: ['GET','POST'])]
+   public function annuler(Sortie $sortie,EntityManagerInterface $em,EtatRepository $etatRepository): Response
+   {
+       $etat= new Etat();
+       $etat = $etatRepository->find(6);
+
+
+
+       $sortie->setEtat($etat);
+       $em->persist($sortie);
+       $em->flush();
+
+
+       return $this->redirectToRoute('sorties_list');
+
+   }
+
 }
 
 
