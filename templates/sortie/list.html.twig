@@ -142,8 +142,15 @@
 
                 {# todo :  #}
                <td><a href="{{ path('sortie_detail',{id:sortie.id}) }}" title="voir details sortie">Afficher</a></td>
-                {#<td><a href="{{ path('sortie_show',{id:course.id}) }}" title="se désister">Se désister</a></td>
-                <td><a href="{{ path('sortie_show',{id:course.id}) }}" title="se désister">S'inscrire</a></td>
+
+                {% if is_granted('ROLE_PLANNER') and (course.trainers.count > 0) %}
+                    <a href="{{ path('course_trainers', {'id' : course.id}) }}">{{ course.trainers | length }}</a>
+                {% else %}
+                    {{ course.trainers | length }}
+                {% endif %}
+
+                <td><a href="{{ path('sortie_modifier',{id:sortie.id}) }}" title="modifier">Modifier</a></td>
+                {#  <td><a href="{{ path('sortie_show',{id:course.id}) }}" title="se désister">S'inscrire</a></td>
                 <td><a href="{{ path('sortie_show',{id:course.id}) }}" title="se désister">publier</a></td>
                 <td><a href="{{ path('sortie_show',{id:course.id}) }}" title="se désister">Supprimer</a></td>#}
 

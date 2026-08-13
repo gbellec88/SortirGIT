@@ -2,9 +2,12 @@
 
 namespace App\Controller;
 
+use App\Entity\Etat;
+use App\Entity\Participant;
 use App\Entity\Sortie;
 use App\Form\SortieType;
 use App\Repository\CampusRepository;
+use App\Repository\EtatRepository;
 use App\Repository\SortieRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -18,13 +21,44 @@ final class SortieController extends AbstractController
 {
 
     #[Route('/ajouter', name: 'sortie_create', methods: ['GET','POST'])]
-    public function create(Request $request, EntityManagerInterface $entityManager): Response
+    public function create(Request $request, EntityManagerInterface $entityManager,EtatRepository $etatRepository): Response
     {
+        //on récupère l'action à faire
+        $action=$request->get('action');
+
+        $campus=$this->getUser()->getCampus()->getNom();
+        //récupérer l'organisateur
+        $organisateur=new Participant();
+        $organisateur=$this->getUser();
+
+        //fixer état publier ou enregistrer pour modification
+        $etat=new Etat();
+
+        if($action=='publier'){
+            $etat = $etatRepository->find(2);
+        }
+
+        if($action=='enregistrer'){
+            $etat = $etatRepository->find(1);
+        }
+
+        if (!$organisateur) {
+            throw $this->createNotFoundException('L\'organisateur est introuvable.');
+        }
+
+        if (!$etat) {
+            throw $this->createNotFoundException('L\'état avec l\'ID 2 Ouverte est introuvable.');
+        }
+
+
+
         $sortie = new Sortie();
         $formSortie = $this->createForm(SortieType::class, $sortie);
         $formSortie->handleRequest($request);
 
         if ($formSortie->isSubmitted() && $formSortie->isValid()) {
+            $sortie->setOrganisateur($organisateur);
+            $sortie->setEtat($etat);
             $entityManager->persist($sortie);
             $entityManager->flush();
 
@@ -39,6 +73,7 @@ final class SortieController extends AbstractController
         return $this->render('sortie/create.html.twig',[
             //on passe le formulaire à Twig
             "sortieForm" => $formSortie,
+            "campus"=>$campus,
         ]);
 
     }
@@ -183,6 +218,34 @@ final class SortieController extends AbstractController
         ]);
     }
 
+    //route pour modifier un cours
+    #[Route('/{id}/modifier', name: 'sortie_modifier',requirements: ['id' => '\d+'], methods: ['GET','POST'])]
+    public function modifier(Sortie $sortie,Request $request,EntityManagerInterface $em): Response
+    {
+        //créer le formulaire
+        $sortieForm=$this->createForm(SortieType::class,$sortie);
+        $sortieForm->handleRequest($request);
 
+        if ($sortieForm->isSubmitted() && $sortieForm->isValid()) {
+
+            $em->persist($sortie);
+            $em->flush();
+
+            //créer un message qui va s'affciher une seule fois sur la prochaine page
+            $this->addFlash("success","Sortie bien modifiée !");
+
+            //redirection vers la page de détails de la sortie
+            return $this->redirectToRoute('sortie_detail',['id'=>$sortie->getId()]);
+        }
+
+        return $this->render('sortie/modifier.html.twig',[
+            "sortie"=>$sortie,
+            //on passe le formulaire à Twig
+            "sortieForm" => $sortieForm,
+        ]);
+
+
+
+    }
 
 }

@@ -16,33 +16,28 @@ class SortieType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
+
             ->add('nom')
             ->add('dateHeureDebut', null, [
                 'widget' => 'single_text',
             ])
-            ->add('duree')
             ->add('dateLimiteInscription', null, [
                 'widget' => 'single_text',
             ])
             ->add('nbinscriptionMax')
+            ->add('duree')
+
             ->add('infosSortie')
-            ->add('organisateur', EntityType::class, [
-                'class' => Participant::class,
-                'choice_label' => 'id',
-            ])
-            ->add('participants', EntityType::class, [
-                'class' => Participant::class,
-                'choice_label' => 'id',
-                'multiple' => true,
-            ])
-            ->add('etat', EntityType::class, [
-                'class' => Etat::class,
-                'choice_label' => 'id',
-            ])
+
+
             ->add('lieu', EntityType::class, [
+                'label'=>'Lieu',
                 'class' => Lieu::class,
-                'choice_label' => 'id',
+                'choice_label' => 'nom',
+                'required' => true,
             ])
+
+
         ;
     }
 

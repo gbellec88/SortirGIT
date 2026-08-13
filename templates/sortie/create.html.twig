@@ -2,11 +2,32 @@
 
 
 {% block body %}
-    <h1>Créer un cours</h1>
+    <h1>Créer une Sortie</h1>
+    <h3>Campus : {{ campus }}</h3>
     <div>
         {{ form_start(sortieForm)}}
         {{ form_widget(sortieForm)}}
-        <button class="btn btn-primary btn-sm">Ajouter une Sortie</button>
+        <button
+            type="submit"
+            name="action"
+            value="enregistrer"
+            class="btn btn-primary btn-sm">
+            Enregistrer
+        </button>
+
+        <button
+            type="submit"
+            name="action"
+            value="publier"
+            class="btn btn-success btn-sm">
+            Publier
+        </button>
+
+        <a
+            href="{{ path('sorties_list') }}"
+            class="btn btn-secondary btn-sm">
+            Retour à la liste
+        </a>
         {{ form_end(sortieForm)}}
     </div>
 {% endblock %}
