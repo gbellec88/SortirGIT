@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Participant;
 use App\Entity\Sortie;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Tools\Pagination\Paginator;
@@ -43,7 +44,8 @@ class SortieRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
-    public function findByCampusId(int $campusId):Paginator
+
+    /*public function findByCampusId(int $campusId):Paginator
     {
         $queryBuilder = $this->createQueryBuilder('s');
 
@@ -61,7 +63,7 @@ class SortieRepository extends ServiceEntityRepository
 
 
 
-    }
+    }*/
 
     public function findByFiltres(int $campusId,
                                   ?int $organisateurId,
@@ -70,40 +72,44 @@ class SortieRepository extends ServiceEntityRepository
                                   ?bool $termineesBool,
                                   ?\DateTimeImmutable $Debut,
                                   ?\DateTimeImmutable $Fin,
-                                  ?string $nomContient):Paginator
+                                  ?string $nomContient,
+                                  ? Participant $participant):Paginator
     {
         $queryBuilder = $this->createQueryBuilder('s');
 
         $queryBuilder
-            ->addSelect('p')
+            ->addSelect('o')
             ->addSelect('c')
-            ->addSelect('i')
+            ->addSelect('p')
             ->addSelect('e')
-            ->leftJoin('s.organisateur', 'p')
-            ->leftJoin('p.campus', 'c')
-            ->leftJoin('s.participants', 'i')
+            ->leftJoin('s.organisateur', 'o')
+            ->leftJoin('o.campus', 'c')
+            ->leftJoin('s.participants', 'p')
             ->leftJoin('s.etat', 'e')
             ->andWhere('c.id = :campusId')
             ->setParameter('campusId', $campusId);
             if($organisateurId!==null)
             {
                 $queryBuilder
-                ->andWhere('p.id = :organisateurId')
+                ->andWhere('o.id = :organisateurId')
                 ->setParameter('organisateurId', $organisateurId);
             }
             if($inscritID!==null)
             {
                 $queryBuilder
-                    ->andWhere('i.id = :inscritID')
+                    ->andWhere('p.id = :inscritID')
                     ->setParameter('inscritID', $inscritID);
             }
-            /*if($pasInscritID!==null)
+
+
+            if($pasInscritID!==null)
             {
                 $queryBuilder
-                    ->andWhere('i.id != :pasInscritID')
+                    ->andWhere(':participant NOT MEMBER OF s.participants')
+                    ->setParameter('participant', $participant);
+            }
 
-                    ->setParameter('pasInscritID', $pasInscritID);
-            }*/
+
 
             //sorties terminées
             if($termineesBool)

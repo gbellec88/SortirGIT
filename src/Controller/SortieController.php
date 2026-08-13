@@ -152,7 +152,7 @@ final class SortieController extends AbstractController
         $nomContient=$request->query->get('nomContient');
 
 
-
+        $participant=$this->getUser();
 
          if ($campusId) {
             //$sorties = $sortieRepository->findByCampusId($campusId);
@@ -163,7 +163,8 @@ final class SortieController extends AbstractController
                                                       $termineesBool,
                                                       $Debut,
                                                       $Fin,
-                                                      $nomContient);
+                                                      $nomContient,
+                                                      $participant);
         } else {
             $sorties = $sortieRepository->findAll();
         }
