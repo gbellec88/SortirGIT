@@ -90,6 +90,7 @@ final class SortieController extends AbstractController
 
         //l'id du campus sélectionné ou au départ celui du user
         $campusId = $request->query->get('campus');
+
         if($campusId==null){
             $campusId = $this->getUser()->getCampus()->getId();
         }else{
@@ -210,7 +211,7 @@ final class SortieController extends AbstractController
 
 
         return $this->render('sortie/detail.html.twig',[
-            //on passe la sortie à  twig
+            //on passe les entités à  twig
             'sortie' => $sortie,
             'participants' => $participants,
             'lieu' => $lieu,
@@ -309,6 +310,32 @@ final class SortieController extends AbstractController
 
 
         return $this->redirectToRoute('sorties_list');
+
+    }
+
+
+    //route pour s'inscrire à une sortie
+    #[Route('/{id}/desister', name: 'sortie_desister',requirements: ['id' => '\d+'], methods: ['GET','POST'])]
+    public function desister(Sortie $sortie,EntityManagerInterface $em): Response
+    {
+
+        // Récupérer le participant connecté
+        $participant = $this->getUser();
+
+        if (!$participant) {
+            throw $this->createNotFoundException("Ce participant n'existe pas.");
+
+        }
+
+        //on enlève le participant connecté de cette sortie
+        $sortie->removeParticipant($participant);
+        $em->persist($sortie);
+        $em->flush();
+
+
+        return $this->redirectToRoute('sorties_list'
+            ,);
+
 
     }
 

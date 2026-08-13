@@ -149,8 +149,12 @@
                 <td><a href="{{ path('sortie_modifier',{id:sortie.id}) }}" title="modifier">Modifier</a></td>
                 {% endif %}
 
-                {% if app.user!==sortie.organisateur %}
+                {% if app.user != sortie.organisateur and not sortie.participants.contains(app.user) %}
                     <td><a href="{{ path('sortie_inscrire',{id:sortie.id}) }}" title="s'inscrire">S'inscrire</a></td>
+                {% endif %}
+
+                {% if sortie.participants.contains(app.user) %}
+                    <td><a href="{{ path('sortie_desister',{id:sortie.id}) }}" title="Se désister">Se désister</a></td>
                 {% endif %}
 
                 {#{% if app.user===sortie.organisateur %}
