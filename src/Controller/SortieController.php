@@ -218,16 +218,38 @@ final class SortieController extends AbstractController
         ]);
     }
 
-    //route pour modifier un cours
+
+    //route pour modifier une sortie
     #[Route('/{id}/modifier', name: 'sortie_modifier',requirements: ['id' => '\d+'], methods: ['GET','POST'])]
-    public function modifier(Sortie $sortie,Request $request,EntityManagerInterface $em): Response
+    public function modifier(Sortie $sortie,Request $request,EntityManagerInterface $em,EtatRepository $etatRepository): Response
     {
+
+        //on récupère l'action à faire
+        $action=$request->get('action');
+
+        //fixer état publier ou enregistrer pour modification
+        $etat=new Etat();
+
+        if($action=='publier'){
+            $etat = $etatRepository->find(2);
+        }
+
+        if($action=='enregistrer'){
+            $etat = $etatRepository->find(1);
+        }
+
+
+        if($action=='supprimer'){
+            $this->redirectToRoute('sortie_supprimer',['id'=>$sortie->getId()]);
+        }
+
+
         //créer le formulaire
         $sortieForm=$this->createForm(SortieType::class,$sortie);
         $sortieForm->handleRequest($request);
 
         if ($sortieForm->isSubmitted() && $sortieForm->isValid()) {
-
+            $sortie->setEtat($etat);
             $em->persist($sortie);
             $em->flush();
 
@@ -248,4 +270,25 @@ final class SortieController extends AbstractController
 
     }
 
+
+    #[Route('/{id}/supprimer/{token}', name: 'sortie_supprimer', requirements: ['id' => '\d+'], methods: ['POST','DELETE'])]
+    public function supprimer(Sortie $sortie,EntityManagerInterface $em,string $token): Response
+    {
+        if ($this->isCsrfTokenValid('delete-sortie-'.$sortie->getId(),$token)) {
+
+            $em->remove($sortie);
+            $em->flush();
+            $this->addFlash('success', 'La sortie a été supprimé');
+
+            return $this->redirectToRoute('sorties_list');
+        }
+        $this->addFlash('danger', 'La sortie n\'a pas pu être supprimée : pb token');
+        return $this->redirectToRoute('sorties_list',['id'=>$sortie->getId()]);
+
+    }
+
+
+
 }
+
+

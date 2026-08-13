@@ -1,10 +1,47 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}
-
-{% endblock %}
 
 {% block body %}
+    <h1>Modifier une sortie</h1>
+    <h3>Campus : {{ sortie.organisateur.campus.nom }}</h3>
+    <div>
+        {{ form_start(sortieForm)}}
+        {{ form_widget(sortieForm)}}
+        <button
+            type="submit"
+            name="action"
+            value="enregistrer"
+            class="btn btn-primary btn-sm">
+            Enregistrer
+        </button>
 
+        <button
+            type="submit"
+            name="action"
+            value="publier"
+            class="btn btn-success btn-sm">
+            Publier
+        </button>
+
+        <button
+            type="submit"
+            name="action"
+            value="supprimer"
+            class="btn btn-danger btn-sm">
+            Supprimer
+        </button>
+
+        <a
+            href="{{ path('sorties_list') }}"
+            class="btn btn-secondary btn-sm">
+            Retour à la liste
+        </a>
+        {{ form_end(sortieForm)}}
+    </div>
+{% endblock %}
+
+
+{% block title %}
+    Modifier une sortie | {{ parent() }}
 {% endblock %}
 
