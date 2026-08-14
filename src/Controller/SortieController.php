@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Close\Close;
 use App\Entity\Etat;
 use App\Entity\Participant;
 use App\Entity\Sortie;
@@ -14,6 +15,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Doctrine\Persistence\ObjectManager;
 
 
 #[Route('/sorties')]
@@ -84,13 +86,16 @@ final class SortieController extends AbstractController
     #[Route('/', name: 'sorties_list', methods: ['GET'])]
     public function list(SortieRepository $sortieRepository,
                          CampusRepository $campusRepository,
-                         Request $request): Response
+                         Request $request,
+                         Close $close): Response
+
     {
 
 
         //l'id du campus sélectionné ou au départ celui du user
         $campusId = $request->query->get('campus');
 
+        //dd($ca
         if($campusId==null){
             $campusId = $this->getUser()->getCampus()->getId();
         }else{
@@ -293,11 +298,16 @@ final class SortieController extends AbstractController
 
     //route pour s'inscrire à une sortie
     #[Route('/{id}/inscrire', name: 'sortie_inscrire',requirements: ['id' => '\d+'], methods: ['GET','POST'])]
-    public function inscrire(Sortie $sortie,EntityManagerInterface $em): Response
+    public function inscrire(Sortie $sortie,
+                             EntityManagerInterface $em,
+                             Close $close,
+                             EtatRepository $etatRepository,
+                             Request $request): Response
     {
 
         // Récupérer le participant connecté
         $participant = $this->getUser();
+
 
         if (!$participant) {
             throw $this->createNotFoundException("Ce participant n'existe pas.");
@@ -306,18 +316,30 @@ final class SortieController extends AbstractController
 
         //ajout du participant connecté
          $sortie->addParticipant($participant);
-         $em->persist($sortie);
-         $em->flush();
 
 
-        return $this->redirectToRoute('sorties_list');
+         //passer la sortie à l'état clôturée si nb partcipants atteint
+          $sortieAfermer=$close->SortieClose($sortie);
+          if ($sortieAfermer) {
+              $etat = $etatRepository->find(3);
+              $sortie->setEtat($etat);
+              $this->addFlash("warning", "La Sortie " . $sortie->getNom() . " est clôturée");
+          }
+
+        $em->persist($sortie);
+        $em->flush();
+
+        //créer un message qui va s'affciher une seule fois sur la prochaine page
+        $this->addFlash("success","Vous êtes inscrit à la Sortie".$sortie->getNom());
+
+        return $this->redirect($request->headers->get('referer'));
 
     }
 
 
     //route pour s'inscrire à une sortie
     #[Route('/{id}/desister', name: 'sortie_desister',requirements: ['id' => '\d+'], methods: ['GET','POST'])]
-    public function desister(Sortie $sortie,EntityManagerInterface $em): Response
+    public function desister(Sortie $sortie,EntityManagerInterface $em,Request $request): Response
     {
 
         // Récupérer le participant connecté
@@ -334,8 +356,10 @@ final class SortieController extends AbstractController
         $em->flush();
 
 
-        return $this->redirectToRoute('sorties_list'
-            ,);
+        //créer un message qui va s'affciher une seule fois sur la prochaine page
+        $this->addFlash("success","Vous êtes bien désinscrit de la Sortie".$sortie->getNom());
+
+        return $this->redirect($request->headers->get('referer'));
 
 
     }
@@ -343,11 +367,13 @@ final class SortieController extends AbstractController
 
     //route pour annuler une sortie
    #[Route('/{id}/annuler', name: 'sortie_annuler',requirements: ['id' => '\d+'], methods: ['GET','POST'])]
-   public function annuler(Sortie $sortie,EntityManagerInterface $em,EtatRepository $etatRepository): Response
+   public function annuler(Sortie $sortie,
+                           EntityManagerInterface $em,
+                           EtatRepository $etatRepository,
+                           Request $request): Response
    {
        $etat= new Etat();
        $etat = $etatRepository->find(6);
-
 
 
        $sortie->setEtat($etat);
@@ -355,7 +381,10 @@ final class SortieController extends AbstractController
        $em->flush();
 
 
-       return $this->redirectToRoute('sorties_list');
+       //créer un message qui va s'affciher une seule fois sur la prochaine page
+       $this->addFlash("success","Vous avez annuler la Sortie".$sortie->getNom());
+
+       return $this->redirect($request->headers->get('referer'));
 
    }
 

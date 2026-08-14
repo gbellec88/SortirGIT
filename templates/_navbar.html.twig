@@ -12,7 +12,7 @@
                     </li>
                 {% endif %}
                 <li class="nav-item">
-                    <a class="nav-link" aria-current="page" >Accueil</a>
+                    <a class="nav-link" href="{{ path('sorties_list')}}" aria-current="page" >Accueil</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="{{ path('participant_edit',{id:app.user.id}) }}">Mon profil</a>
