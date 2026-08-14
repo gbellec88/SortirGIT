@@ -97,7 +97,7 @@
                         id="dateDebut"
                         name="dateDebut"
                         class="form-control"
-                        value="{{ app.request.query.get('dateDebut') }}"
+                        value="{{ app.request.query.get('dateDebut') ?? '' }}"
                     >
 
                     <label for="dateFin">et</label>
@@ -106,7 +106,7 @@
                         id="dateFin"
                         name="dateFin"
                         class="form-control"
-                        value="{{ app.request.query.get('dateFin') }}"
+                        value="{{ app.request.query.get('dateFin') ?? '' }}"
                     >
                 </div>
 
@@ -136,7 +136,7 @@
                 <td>{{ sortie.nom }}</td>
                 <td>{{ sortie.dateHeureDebut | date('d/m/Y') }}</td>
                 <td>{{ sortie.dateLimiteInscription | date('d/m/Y') }}</td>
-                <td>{{ sortie.nbinscriptionMax }}</td>  {# todo : calculer le nombre d'inscrits les cours #}
+                <td>{{ sortie.participants.count }}/{{ sortie.nbinscriptionMax }}</td>  {# todo : calculer le nombre d'inscrits les cours #}
                 <td>{{ sortie.etat.libelle }}</td>
                 <td>{{ sortie.organisateur.nom }} {{ sortie.organisateur.prenom }}</td>
 

@@ -119,6 +119,7 @@ class SortieRepository extends ServiceEntityRepository
                     ->setParameter('pasInscritID', 5);
             }
 
+        //dd($Debut,$Fin,$nomContient);
         if ($Debut !== null && $Fin !==null) {
             $queryBuilder
                 ->andWhere('s.dateHeureDebut >= :dateDebut')
@@ -129,7 +130,7 @@ class SortieRepository extends ServiceEntityRepository
         }
 
 
-        if ($nomContient !== "") {
+        if ($nomContient !== null) {
             $queryBuilder
                 ->andWhere('s.nom LIKE :nomSortie')
                 ->setParameter('nomSortie', '%' . $nomContient . '%');
@@ -137,6 +138,8 @@ class SortieRepository extends ServiceEntityRepository
 
 
         $query = $queryBuilder->getQuery();
+        //dd($query);
+
         return new Paginator($query);
     }
 

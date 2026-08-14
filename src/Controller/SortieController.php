@@ -133,15 +133,13 @@ final class SortieController extends AbstractController
         }
 
         //récupérer le filtrage entre une date de début et de fin
-        $dateDebut = $request->query->get('dateDebut');
-        $dateFin = $request->query->get('dateFin');
-        //dd($dateDebut, $dateFin);
+        $dateDebut = $request->query->get('dateDebut') ?: null;
+        $dateFin = $request->query->get('dateFin') ?: null;
 
-        if($dateDebut!=="" && $dateFin!==""){
-            $Debut = new \DateTimeImmutable($request->query->get('dateDebut'));
-            $Fin = new \DateTimeImmutable($request->query->get('dateFin'));
-
-        }else{
+        if ($dateDebut !== null && $dateFin !== null) {
+            $Debut = new \DateTimeImmutable($dateDebut);
+            $Fin = new \DateTimeImmutable($dateFin);
+        } else {
             $Debut = null;
             $Fin = null;
         }
@@ -153,6 +151,8 @@ final class SortieController extends AbstractController
 
 
         $participant=$this->getUser();
+
+        //dd($Debut,$Fin);
 
          if ($campusId) {
             //$sorties = $sortieRepository->findByCampusId($campusId);
